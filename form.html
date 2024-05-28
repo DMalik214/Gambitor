@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gambitor Registration</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 <style>
     body {
         font-family: 'Roboto', sans-serif;
@@ -26,6 +27,15 @@
         padding: 30px;
         border-radius: 10px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+    form:hover {
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    }
+    label {
+        font-weight: bold;
+        margin-bottom: 5px;
+        display: block;
     }
     input[type="text"],
     input[type="email"],
@@ -35,28 +45,48 @@
     select {
         width: 100%;
         padding: 10px;
-        margin: 10px 0;
+        margin: 10px 0 20px 0;
         border: 1px solid #ccc;
         border-radius: 4px;
         box-sizing: border-box;
+        transition: border 0.3s ease;
     }
-    input[type="submit"] {
-        background-color: #457ba0;
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="password"]:focus,
+    input[type="date"]:focus,
+    input[type="tel"]:focus,
+    select:focus {
+        border-color: #4189db;
+        outline: none;
+    }
+    input[type="submit"], input[type="reset"] {
+        background-color: #4189db;
         color: white;
         padding: 14px 20px;
-        margin: 20px 0 10px;
+        margin: 20px 10px 0;
         border: none;
         border-radius: 4px;
         cursor: pointer;
         font-weight: bold;
+        width: 45%;
+        transition: background-color 0.3s ease;
     }
-    input[type="submit"]:hover {
-        background-color: #385c7d;
+    input[type="submit"]:hover, input[type="reset"]:hover {
+        background-color: #365c7d;
     }
-    .error {
+    .error-message {
         color: red;
-        text-align: center;
-        margin-top: 10px;
+        font-size: 0.9em;
+        display: none;
+        margin-top: -10px;
+        margin-bottom: 10px;
+    }
+    .valid {
+        border-color: #4CAF50;
+    }
+    .invalid {
+        border-color: #F44336;
     }
     footer {
         text-align: center;
@@ -104,9 +134,13 @@
         <option value="female">Female</option>
         <option value="other">Other</option>
     </select>
-    <input type="reset" value="Reset">
-    <input type="submit" value="Register">
+    <div style="text-align: center;">
+        <input type="reset" value="Reset">
+        <input type="submit" value="Register">
+    </div>
 </form>
+
+<p id="error" class="error"></p>
 
 <footer>
     <a href="index.html">Homepage</a>
@@ -114,34 +148,36 @@
 </footer>
 
 <script>
-function formSubmit() {
-    var email = document.getElementById("email").value;
-    var contact = document.getElementById("contact").value;
-    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    var contactRegex = /^\d{10}$/;
-
-    var isValid = true;
-    var errorMessage = "";
-
-    if (!emailRegex.test(email)) {
-        isValid = false;
-        errorMessage += "Invalid email address. ";
+    function validateField(field, regex, errorMessageId, message) {
+        const value = field.value;
+        const errorSpan = document.getElementById(errorMessageId);
+        if (!regex.test(value)) {
+            field.classList.add("invalid");
+            field.classList.remove("valid");
+            errorSpan.style.display = "block";
+            errorSpan.innerText = message;
+            return false;
+        } else {
+            field.classList.add("valid");
+            field.classList.remove("invalid");
+            errorSpan.style.display = "none";
+            return true;
+        }
     }
-
-    if (!contactRegex.test(contact)) {
-        isValid = false;
-        errorMessage += "Invalid contact number (should be 10 digits).";
+    
+    function validateForm() {
+        let isValid = true;
+        isValid &= validateField(document.getElementById("email"), /^[^\s@]+@[^\s@]+\.[^\s@]+$/, "email-error", "Invalid email address.");
+        // Add similar lines for other fields
+        return !!isValid;
     }
-
-    if (!isValid) {
-        document.getElementById("error").innerHTML = errorMessage;
-    }
-
-    return isValid;
-}
-</script>
-
-<p id="error" class="error"></p>
+    
+    document.getElementById("registrationForm").addEventListener("submit", function (event) {
+        if (!validateForm()) {
+            event.preventDefault();
+        }
+    });
+    </script>
 
 </body>
 </html>
